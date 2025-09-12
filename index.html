@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bar Mitzvah RSVP</title>
+    <style>
+        :root {
+            --primary-color: #3f51b5;
+            --secondary-color: #f5f5f5;
+            --accent-color: #ff9800;
+            --text-color: #333;
+            --error-color: #f44336;
+            --success-color: #4CAF50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .page-container {
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .container {
+            flex: 1;
+            padding: 40px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+        }
+        
+        .invitation-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        
+        .invitation-image {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .invitation-image:hover {
+            transform: scale(1.02);
+        }
+        
+        .fullscreen-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .fullscreen-image {
+            max-width: 90%;
+            max-height: 90vh;
+        }
+        
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+        
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+        }
+        
+        .form-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .form-header img {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+        
+        .form-header h2 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.2);
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+        }
+        
+        .radio-option input[type="radio"] {
+            margin-right: 8px;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: #303f9f;
+        }
+        
+        .success-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .success-modal h2 {
+            color: var(--success-color);
+            margin-bottom: 20px;
+        }
+        
+        .success-modal-details {
+            text-align: left;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: var(--secondary-color);
+            border-radius: 8px;
+            line-height: 1.8;
+        }
+        
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 90;
+        }
+        
+        .success-modal button {
+            background-color: var(--success-color);
+            margin-top: 20px;
+        }
+        
+        .success-modal button:hover {
+            background-color: #3d8b40;
+        }
+        
+        .error-message {
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            display: none;
+            background-color: rgba(244, 67, 54, 0.2);
+            color: var(--error-color);
+        }
+        
+        .required {
+            color: var(--error-color);
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+        }
+        
+        @media (max-width: 992px) {
+            .page-container {
+                flex-direction: column;
+            }
+            
+            .invitation-container {
+                order: -1;
+                margin-bottom: 30px;
+            }
+            
+            .container {
+                max-width: 100%;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="fullscreen-overlay" id="overlay">
+        <span class="close-button" id="closeButton">&times;</span>
+        <img src="Ezzy%20bar%20mitzvah%20invitation%404x.png" alt="Bar Mitzvah Invitation" class="fullscreen-image">
+    </div>
+
+    <div class="page-container">
+        <div class="container">
+            <h1>Bar Mitzvah RSVP</h1>
+            
+            <div class="form-header">
+                <h2>Join us for this special celebration</h2>
+                <p>Please complete this form to let us know if you'll be attending.</p>
+            </div>
+        
+        <form id="rsvpForm">
+            <div class="form-group">
+                <label for="name">Full Name <span class="required">*</span></label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="adults">Number of Adults Attending <span class="required">*</span></label>
+                <input type="number" id="adults" name="adults" min="0" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="children">Number of Children Attending</label>
+                <input type="number" id="children" name="children" min="0" value="0">
+            </div>
+            
+            <div class="form-group">
+                <label>Attendance <span class="required">*</span></label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="fullEvent" name="attendance" value="Full Event" required>
+                        <label for="fullEvent">Full Event</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="dessertOnly" name="attendance" value="Dessert and Dancing Only">
+                        <label for="dessertOnly">Dessert and Dancing Only</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="notAttending" name="attendance" value="I won't be able to attend">
+                        <label for="notAttending">I won't be able to attend</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="comments">Comments or Special Requests</label>
+                <textarea id="comments" name="comments" rows="4" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 16px; font-family: inherit; resize: vertical;"></textarea>
+            </div>
+            
+            <button type="submit" id="submitBtn">Submit RSVP</button>
+            
+            <div class="error-message" id="errorMessage">
+                There was an error submitting your RSVP. Please try again later.
+            </div>
+        </form>
+        
+        <div class="footer">
+            <p>If you have any questions, please email <strong>barmitzvah@rambam770.com</strong></p>
+        </div>
+    </div>
+        
+    <div class="invitation-container">
+        <img src="Ezzy%20bar%20mitzvah%20invitation%404x.png" alt="Bar Mitzvah Invitation" class="invitation-image" id="invitationImage">
+    </div>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop"></div>
+<div class="success-modal" id="successModal">
+    <h2>Thank You!</h2>
+    <p>Your RSVP has been successfully submitted. We look forward to celebrating with you!</p>
+    
+    <div class="success-modal-details" id="submissionDetails">
+        <!-- Details will be inserted here by JavaScript -->
+    </div>
+    
+    <button id="closeModal">Close</button>
+</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('rsvpForm');
+            const errorMessage = document.getElementById('errorMessage');
+            const invitationImage = document.getElementById('invitationImage');
+            const overlay = document.getElementById('overlay');
+            const closeButton = document.getElementById('closeButton');
+            const successModal = document.getElementById('successModal');
+            const modalBackdrop = document.getElementById('modalBackdrop');
+            const submissionDetails = document.getElementById('submissionDetails');
+            const closeModalButton = document.getElementById('closeModal');
+            
+            // Open fullscreen view when clicking on invitation
+            invitationImage.addEventListener('click', function() {
+                overlay.style.display = 'flex';
+                document.body.style.overflow = 'hidden'; // Prevent scrolling
+            });
+            
+            // Close fullscreen view when clicking on overlay or close button
+            overlay.addEventListener('click', function() {
+                overlay.style.display = 'none';
+                document.body.style.overflow = ''; // Restore scrolling
+            });
+            
+            closeButton.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent triggering the overlay click event
+                overlay.style.display = 'none';
+                document.body.style.overflow = ''; // Restore scrolling
+            });
+            
+            // Close success modal
+            closeModalButton.addEventListener('click', function() {
+                successModal.style.display = 'none';
+                modalBackdrop.style.display = 'none';
+                document.body.style.overflow = ''; // Restore scrolling
+                document.location.href = "/Ezzy%20bar%20mitzvah%20invitation%404x.png";
+            });
+            
+            // Function to toggle visibility of attendance-related fields
+            function toggleAttendanceFields() {
+                const notAttending = document.getElementById('notAttending').checked;
+                const adultsField = document.getElementById('adults').parentElement;
+                const childrenField = document.getElementById('children').parentElement;
+                
+                if (notAttending) {
+                    adultsField.style.display = 'none';
+                    childrenField.style.display = 'none';
+                } else {
+                    adultsField.style.display = 'block';
+                    childrenField.style.display = 'block';
+                }
+            }
+            
+            // Add event listeners to radio buttons
+            document.getElementById('fullEvent').addEventListener('change', toggleAttendanceFields);
+            document.getElementById('dessertOnly').addEventListener('change', toggleAttendanceFields);
+            document.getElementById('notAttending').addEventListener('change', toggleAttendanceFields);
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const adults = document.getElementById('adults').value;
+                const children = document.getElementById('children').value;
+                const attendanceOptions = document.getElementsByName('attendance');
+                let attendance = '';
+                
+                for (const option of attendanceOptions) {
+                    if (option.checked) {
+                        attendance = option.value;
+                        break;
+                    }
+                }
+                
+                // If not attending, set adults and children to 0
+                if (attendance === "I won't be able to attend") {
+                    document.getElementById('adults').value = 0;
+                    document.getElementById('children').value = 0;
+                }
+                
+                // Get comments
+                const comments = document.getElementById('comments').value;
+                
+                // Prepare the data for Google Sheets
+                const formData = {
+                    name: name,
+                    email: email,
+                    adults: adults,
+                    children: children,
+                    attendance: attendance,
+                    comments: comments,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // In a real implementation, you would send this data to your server
+                // or directly to Google Sheets API
+                console.log('Form data to be sent:', formData);
+                
+                // Show success modal with submission details
+                function showSuccessModal(data) {
+                    // Create formatted HTML for submission details
+                    let attendingText = data.attendance;
+                    let guestCountText = '';
+                    
+                    if (data.attendance !== "I won't be able to attend") {
+                        guestCountText = `<strong>Guests:</strong> ${data.adults} adult${data.adults != 1 ? 's' : ''}`;
+                        if (data.children > 0) {
+                            guestCountText += `, ${data.children} child${data.children != 1 ? 'ren' : ''}`;
+                        }
+                    }
+                    
+                    let detailsHTML = `
+                        <strong>Name:</strong> ${data.name}<br>
+                        <strong>Email:</strong> ${data.email}<br>
+                        <strong>Attendance:</strong> ${attendingText}<br>
+                        ${guestCountText ? guestCountText + '<br>' : ''}
+                    `;
+                    
+                    if (data.comments) {
+                        detailsHTML += `<strong>Comments:</strong> ${data.comments}`;
+                    }
+                    
+                    // Update the modal with details
+                    submissionDetails.innerHTML = detailsHTML;
+                    
+                    // Show the modal
+                    modalBackdrop.style.display = 'block';
+                    successModal.style.display = 'block';
+                    document.body.style.overflow = 'hidden'; // Prevent scrolling
+                }
+                
+                // For demonstration purposes, show success message
+                // Replace this with actual API call to Google Sheets
+                
+                // Using form submission instead of fetch to avoid CORS issues
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbzlWxdeCylMrXGyCX2gwEaSt79WmpblkKp3folpQDcqKhdtihRiDpKyPIZ6LVcv6yt0/exec';
+                
+                // Create a hidden form to submit the data
+                const hiddenForm = document.createElement('form');
+                hiddenForm.method = 'POST';
+                hiddenForm.action = scriptURL;
+                hiddenForm.target = 'hidden-iframe';
+                
+                // Create hidden iframe to receive the response
+                const iframe = document.createElement('iframe');
+                iframe.name = 'hidden-iframe';
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+                
+                // Add the data to the form
+                for (const key in formData) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = formData[key];
+                    hiddenForm.appendChild(input);
+                }
+                
+                // Add the form to the document and submit it
+                document.body.appendChild(hiddenForm);
+                hiddenForm.submit();
+                
+                // Remove the form and iframe after submission
+                setTimeout(() => {
+                    document.body.removeChild(hiddenForm);
+                    document.body.removeChild(iframe);
+                }, 1000);
+                
+                // Show success modal
+                showSuccessModal(formData);
+            });
+        });
+    </script>
+</body>
+</html>
