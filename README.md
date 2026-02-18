@@ -1,1 +1,1 @@
-# barmitzvahrsvp
+# bar/bas mitzvah rsvp
