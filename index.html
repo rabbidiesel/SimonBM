@@ -6,19 +6,26 @@
     <title>Bas Mitzvah RSVP</title>
     <style>
         :root {
-            --primary-color: #062168;
-            --secondary-color: #f5f5f5;
-            --accent-color: #ff9800;
-            --text-color: #333;
-            --error-color: #f44336;
-            --success-color: #4CAF50;
+            --primary-color: #6B83A8;
+            --primary-dark: #4A6180;
+            --secondary-color: #f5f0ed;
+            --accent-color: #B8935A;
+            --accent-light: #D4B87A;
+            --blush: #D4A5A5;
+            --blush-light: #E8C9C9;
+            --text-color: #3D4F6F;
+            --text-light: #6B83A8;
+            --error-color: #C47070;
+            --success-color: #7BA88E;
+            --bg-color: #EDF1F5;
+            --container-bg: #FAFBFD;
         }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: var(--text-color);
-            background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+            background: var(--bg-color);
             margin: 0;
             padding: 20px;
             min-height: 100vh;
@@ -37,10 +44,11 @@
         .container {
             flex: 1;
             padding: 40px;
-            background-color: #fefbf0;
+            background-color: var(--container-bg);
             border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(107, 131, 168, 0.15);
             max-width: 600px;
+            border: 1px solid rgba(107, 131, 168, 0.12);
         }
         
         .invitation-container {
@@ -55,7 +63,7 @@
             max-width: 100%;
             max-height: 85vh;
             border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 30px rgba(107, 131, 168, 0.2);
             cursor: pointer;
             transition: transform 0.3s ease;
         }
@@ -94,9 +102,11 @@
         
         h1 {
             text-align: center;
-            color: var(--primary-color);
+            color: var(--accent-color);
             margin-bottom: 30px;
             font-size: 2.2rem;
+            font-weight: 300;
+            letter-spacing: 2px;
         }
         
         .form-header {
@@ -112,6 +122,11 @@
         .form-header h2 {
             color: var(--primary-color);
             margin-bottom: 10px;
+            font-weight: 400;
+        }
+        
+        .form-header p {
+            color: var(--text-light);
         }
         
         .form-group {
@@ -122,6 +137,7 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
+            color: var(--text-color);
         }
         
         input[type="text"],
@@ -130,11 +146,12 @@
         select {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--blush-light);
             border-radius: 5px;
             box-sizing: border-box;
             font-size: 16px;
             transition: border-color 0.3s;
+            background-color: #fff;
         }
         
         input[type="text"]:focus,
@@ -143,7 +160,7 @@
         select:focus {
             border-color: var(--primary-color);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.2);
+            box-shadow: 0 0 0 3px rgba(107, 131, 168, 0.2);
         }
         
         .radio-group {
@@ -159,10 +176,11 @@
         
         .radio-option input[type="radio"] {
             margin-right: 8px;
+            accent-color: var(--primary-color);
         }
         
         button {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
             color: white;
             border: none;
             padding: 14px 24px;
@@ -171,12 +189,14 @@
             cursor: pointer;
             width: 100%;
             font-weight: 600;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
             margin-top: 10px;
+            letter-spacing: 1px;
         }
         
         button:hover {
-            background-color: #303f9f;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #3A5170 100%);
+            box-shadow: 0 4px 15px rgba(107, 131, 168, 0.3);
         }
         
         .success-modal {
@@ -185,14 +205,15 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: white;
+            background-color: var(--container-bg);
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(107, 131, 168, 0.25);
             z-index: 100;
             max-width: 500px;
             width: 90%;
             text-align: center;
+            border: 1px solid rgba(107, 131, 168, 0.12);
         }
         
         .success-modal h2 {
@@ -204,9 +225,10 @@
             text-align: left;
             margin: 20px 0;
             padding: 20px;
-            background-color: var(--secondary-color);
+            background-color: var(--bg-color);
             border-radius: 8px;
             line-height: 1.8;
+            border: 1px solid rgba(107, 131, 168, 0.1);
         }
         
         .modal-backdrop {
@@ -216,17 +238,17 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(61, 79, 111, 0.5);
             z-index: 90;
         }
         
         .success-modal button {
-            background-color: var(--success-color);
+            background: linear-gradient(135deg, var(--success-color) 0%, #5E8A6E 100%);
             margin-top: 20px;
         }
         
         .success-modal button:hover {
-            background-color: #3d8b40;
+            background: linear-gradient(135deg, #5E8A6E 0%, #4D7A5D 100%);
         }
         
         .error-message {
@@ -234,19 +256,42 @@
             margin-top: 20px;
             border-radius: 5px;
             display: none;
-            background-color: rgba(244, 67, 54, 0.2);
+            background-color: rgba(212, 165, 165, 0.25);
             color: var(--error-color);
         }
         
         .required {
-            color: var(--error-color);
+            color: var(--blush);
         }
         
         .footer {
             margin-top: 30px;
             text-align: center;
             font-size: 14px;
-            color: #777;
+            color: var(--text-light);
+        }
+        
+        .footer strong {
+            color: var(--accent-color);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--blush-light);
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s;
+            background-color: #fff;
+        }
+
+        textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(107, 131, 168, 0.2);
         }
         
         @media (max-width: 992px) {
@@ -326,7 +371,7 @@
             
             <div class="form-group">
                 <label for="comments">Comments or Special Requests</label>
-                <textarea id="comments" name="comments" rows="4" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 16px; font-family: inherit; resize: vertical;"></textarea>
+                <textarea id="comments" name="comments" rows="4"></textarea>
             </div>
             
             <button type="submit" id="submitBtn">Submit RSVP</button>
