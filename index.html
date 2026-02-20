@@ -198,6 +198,11 @@
             background: linear-gradient(135deg, var(--primary-dark) 0%, #3A5170 100%);
             box-shadow: 0 4px 15px rgba(107, 131, 168, 0.3);
         }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
         
         .success-modal {
             display: none;
@@ -337,19 +342,21 @@
             </div>
             
             <div class="form-group">
-                <label for="email">Email <span class="required">*</span></label>
+                <label for="email">Email</label>
                 <input type="email" id="email" name="email" required>
             </div>
             
             <div class="form-group">
-                <label for="adults">Number of Adults Attending <span class="required">*</span></label>
-                <input type="number" id="adults" name="adults" min="0" required>
+                <label for="guests">Number of Guests Attending <span class="required">*</span></label>
+                <input type="number" id="guests" name="guests" min="0" required>
             </div>
             
+            <!-- COMMENTED OUT: Children field - uncomment to re-enable
             <div class="form-group">
                 <label for="children">Number of Children Attending</label>
                 <input type="number" id="children" name="children" min="0" value="0">
             </div>
+            -->
             
             <div class="form-group">
                 <label>Attendance <span class="required">*</span></label>
@@ -358,10 +365,12 @@
                         <input type="radio" id="fullEvent" name="attendance" value="Full Event" required>
                         <label for="fullEvent">Full Event</label>
                     </div>
+                    <!-- COMMENTED OUT: Dessert and Dancing option - uncomment to re-enable
                     <div class="radio-option">
                         <input type="radio" id="dessertOnly" name="attendance" value="Dessert and Dancing Only">
                         <label for="dessertOnly">Dessert and Dancing Only</label>
                     </div>
+                    -->
                     <div class="radio-option">
                         <input type="radio" id="notAttending" name="attendance" value="I won't be able to attend">
                         <label for="notAttending">I won't be able to attend</label>
@@ -414,61 +423,85 @@
             const modalBackdrop = document.getElementById('modalBackdrop');
             const submissionDetails = document.getElementById('submissionDetails');
             const closeModalButton = document.getElementById('closeModal');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbwfu-mfK0YSicmW0SjHpIRTJ_wOeitePV6bcl3ijQ0drsrIe7g1j_bbNPWRAt6Q1hM_3Q/exec';
             
             // Open fullscreen view when clicking on invitation
             invitationImage.addEventListener('click', function() {
                 overlay.style.display = 'flex';
-                document.body.style.overflow = 'hidden'; // Prevent scrolling
+                document.body.style.overflow = 'hidden';
             });
             
-            // Close fullscreen view when clicking on overlay or close button
+            // Close fullscreen view
             overlay.addEventListener('click', function() {
                 overlay.style.display = 'none';
-                document.body.style.overflow = ''; // Restore scrolling
+                document.body.style.overflow = '';
             });
             
             closeButton.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent triggering the overlay click event
+                e.stopPropagation();
                 overlay.style.display = 'none';
-                document.body.style.overflow = ''; // Restore scrolling
+                document.body.style.overflow = '';
             });
             
             // Close success modal
             closeModalButton.addEventListener('click', function() {
                 successModal.style.display = 'none';
                 modalBackdrop.style.display = 'none';
-                document.body.style.overflow = ''; // Restore scrolling
+                document.body.style.overflow = '';
                 document.location.href = "/chasyas-invite-bm.png";
             });
             
-            // Function to toggle visibility of attendance-related fields
+            // Toggle guest count field based on attendance
             function toggleAttendanceFields() {
                 const notAttending = document.getElementById('notAttending').checked;
-                const adultsField = document.getElementById('adults').parentElement;
-                const childrenField = document.getElementById('children').parentElement;
+                const guestsField = document.getElementById('guests').parentElement;
                 
                 if (notAttending) {
-                    adultsField.style.display = 'none';
-                    childrenField.style.display = 'none';
+                    guestsField.style.display = 'none';
                 } else {
-                    adultsField.style.display = 'block';
-                    childrenField.style.display = 'block';
+                    guestsField.style.display = 'block';
                 }
             }
             
-            // Add event listeners to radio buttons
             document.getElementById('fullEvent').addEventListener('change', toggleAttendanceFields);
-            document.getElementById('dessertOnly').addEventListener('change', toggleAttendanceFields);
+            // COMMENTED OUT: dessertOnly listener - uncomment if re-enabling
+            // document.getElementById('dessertOnly').addEventListener('change', toggleAttendanceFields);
             document.getElementById('notAttending').addEventListener('change', toggleAttendanceFields);
+            
+            // Show success modal with details
+            function showSuccessModal(data) {
+                let attendingText = data.attendance;
+                let guestCountText = '';
+                
+                if (data.attendance !== "I won't be able to attend") {
+                    guestCountText = `<strong>Guests:</strong> ${data.guests}`;
+                }
+                
+                let detailsHTML = `
+                    <strong>Name:</strong> ${data.name}<br>
+                    <strong>Email:</strong> ${data.email}<br>
+                    <strong>Attendance:</strong> ${attendingText}<br>
+                    ${guestCountText ? guestCountText + '<br>' : ''}
+                `;
+                
+                if (data.comments) {
+                    detailsHTML += `<strong>Comments:</strong> ${data.comments}`;
+                }
+                
+                submissionDetails.innerHTML = detailsHTML;
+                modalBackdrop.style.display = 'block';
+                successModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
             
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                // Get form values
                 const name = document.getElementById('name').value;
                 const email = document.getElementById('email').value;
-                const adults = document.getElementById('adults').value;
-                const children = document.getElementById('children').value;
+                const guests = document.getElementById('guests').value;
                 const attendanceOptions = document.getElementsByName('attendance');
                 let attendance = '';
                 
@@ -479,102 +512,48 @@
                     }
                 }
                 
-                // If not attending, set adults and children to 0
-                if (attendance === "I won't be able to attend") {
-                    document.getElementById('adults').value = 0;
-                    document.getElementById('children').value = 0;
-                }
-                
-                // Get comments
+                const guestsValue = (attendance === "I won't be able to attend") ? 0 : guests;
                 const comments = document.getElementById('comments').value;
                 
-                // Prepare the data for Google Sheets
                 const formData = {
                     name: name,
                     email: email,
-                    adults: adults,
-                    children: children,
+                    guests: guestsValue,
+                    children: 0,  // Hardcoded to 0 while children field is commented out
                     attendance: attendance,
                     comments: comments,
                     timestamp: new Date().toISOString()
                 };
                 
-                // In a real implementation, you would send this data to your server
-                // or directly to Google Sheets API
-                console.log('Form data to be sent:', formData);
+                // Disable button while submitting
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting...';
+                errorMessage.style.display = 'none';
                 
-                // Show success modal with submission details
-                function showSuccessModal(data) {
-                    // Create formatted HTML for submission details
-                    let attendingText = data.attendance;
-                    let guestCountText = '';
-                    
-                    if (data.attendance !== "I won't be able to attend") {
-                        guestCountText = `<strong>Guests:</strong> ${data.adults} adult${data.adults != 1 ? 's' : ''}`;
-                        if (data.children > 0) {
-                            guestCountText += `, ${data.children} child${data.children != 1 ? 'ren' : ''}`;
-                        }
-                    }
-                    
-                    let detailsHTML = `
-                        <strong>Name:</strong> ${data.name}<br>
-                        <strong>Email:</strong> ${data.email}<br>
-                        <strong>Attendance:</strong> ${attendingText}<br>
-                        ${guestCountText ? guestCountText + '<br>' : ''}
-                    `;
-                    
-                    if (data.comments) {
-                        detailsHTML += `<strong>Comments:</strong> ${data.comments}`;
-                    }
-                    
-                    // Update the modal with details
-                    submissionDetails.innerHTML = detailsHTML;
-                    
-                    // Show the modal
-                    modalBackdrop.style.display = 'block';
-                    successModal.style.display = 'block';
-                    document.body.style.overflow = 'hidden'; // Prevent scrolling
-                }
-                
-                // For demonstration purposes, show success message
-                // Replace this with actual API call to Google Sheets
-                
-                // Using form submission instead of fetch to avoid CORS issues
-                const scriptURL = 'https://script.google.com/macros/s/AKfycbwfu-mfK0YSicmW0SjHpIRTJ_wOeitePV6bcl3ijQ0drsrIe7g1j_bbNPWRAt6Q1hM_3Q/exec';
-                
-                // Create a hidden form to submit the data
-                const hiddenForm = document.createElement('form');
-                hiddenForm.method = 'POST';
-                hiddenForm.action = scriptURL;
-                hiddenForm.target = 'hidden-iframe';
-                
-                // Create hidden iframe to receive the response
-                const iframe = document.createElement('iframe');
-                iframe.name = 'hidden-iframe';
-                iframe.style.display = 'none';
-                document.body.appendChild(iframe);
-                
-                // Add the data to the form
-                for (const key in formData) {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = key;
-                    input.value = formData[key];
-                    hiddenForm.appendChild(input);
-                }
-                
-                // Add the form to the document and submit it
-                document.body.appendChild(hiddenForm);
-                hiddenForm.submit();
-                
-                // Remove the form and iframe after submission
-                setTimeout(() => {
-                    document.body.removeChild(hiddenForm);
-                    document.body.removeChild(iframe);
-                }, 1000);
-                
-                // Show success modal
-                showSuccessModal(formData);
+                // Use fetch with no-cors mode — works reliably on GitHub Pages
+                // The trade-off: we can't read the response, but the data IS sent
+                fetch(scriptURL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(formData).toString()
+                })
+                .then(() => {
+                    // With no-cors we always get an opaque response,
+                    // so we optimistically show success
+                    showSuccessModal(formData);
+                    form.reset();
+                })
+                .catch(error => {
+                    console.error('Submission error:', error);
+                    errorMessage.style.display = 'block';
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit RSVP';
+                });
             });
         });
     </script>
