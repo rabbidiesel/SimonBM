@@ -456,7 +456,7 @@
             // Toggle guest count field based on attendance
             function toggleAttendanceFields() {
                 const notAttending = document.getElementById('notAttending').checked;
-                const guestsField = document.getElementById('guests').parentElement;
+                const guestsField = document.getElementById('adults').parentElement;
                 
                 if (notAttending) {
                     guestsField.style.display = 'none';
@@ -501,7 +501,7 @@
                 
                 const name = document.getElementById('name').value;
                 const email = document.getElementById('email').value;
-                const guests = document.getElementById('guests').value;
+                const guests = document.getElementById('adults').value;
                 const attendanceOptions = document.getElementsByName('attendance');
                 let attendance = '';
                 
@@ -518,7 +518,7 @@
                 const formData = {
                     name: name,
                     email: email,
-                    guests: guestsValue,
+                    adults: guestsValue,
                     children: 0,  // Hardcoded to 0 while children field is commented out
                     attendance: attendance,
                     comments: comments,
